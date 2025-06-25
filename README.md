@@ -1,4 +1,4 @@
-# @mattermost/react-native-paste-input
+# react-native-paste-input
 
 > Forked from https://github.com/mattermost/react-native-paste-input
 
@@ -12,7 +12,7 @@ the Photos gallery app.
 ## Installation
 
 ```sh
-npm i --save-exact @mattermost/react-native-paste-input
+npm i --save-exact @holepunchto/react-native-paste-input
 ```
 
 ## Demo
@@ -26,7 +26,7 @@ npm i --save-exact @mattermost/react-native-paste-input
 
 ```js
 import React, { useRef } from 'react';
-import PasteInput, { PastedFile, PasteInputRef } from "@mattermost/react-native-paste-input";
+import PasteInput, { PastedFile, PasteInputRef } from "@holepunchto/react-native-paste-input";
 
 const YourTextInput = () => {
     const inputRef = useRef<PasteInputRef>(null);

@@ -1,5 +1,7 @@
 # @mattermost/react-native-paste-input
 
+> Forked from https://github.com/mattermost/react-native-paste-input
+
 React Native `TextInput` component have functionality to capture text input from a user
 by using the soft and hardware keyboards but lacks the ability to restrict copy & paste options
 as well as allwing pasting different files formats copied from other apps, like images & videos from

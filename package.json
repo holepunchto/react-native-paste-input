@@ -1,5 +1,5 @@
 {
-  "name": "@mattermost/react-native-paste-input",
+  "name": "@holepunchto/react-native-paste-input",
   "version": "0.8.1",
   "description": "React Native TextInput replacement to allow pasting files",
   "main": "lib/commonjs/index",
@@ -43,13 +43,13 @@
     "paste",
     "text-input"
   ],
-  "repository": "https://github.com/mattermost/react-native-paste-input",
+  "repository": "https://github.com/holepunchto/react-native-paste-input",
   "author": "Elias Nahum <nahumhbl@gmail.com> (https://github.com/mattermost)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mattermost/react-native-paste-input/issues"
+    "url": "https://github.com/holepunchto/react-native-paste-input/issues"
   },
-  "homepage": "https://github.com/mattermost/react-native-paste-input#readme",
+  "homepage": "https://github.com/holepunchto/react-native-paste-input#readme",
   "dependencies": {
     "semver": "7.6.3"
   },

@@ -29,7 +29,7 @@
   "scripts": {
     "test": "jest",
     "typescript": "tsc --noEmit",
-    "lint": "eslint \"**/*.{js,ts,tsx}\"",
+    "lint": "eslint \"**/*.{js,ts,tsx}\" --fix",
     "release": "release-it",
     "example": "cd example && npm",
     "pods": "cd example && pod-install --quiet",

@@ -284,7 +284,9 @@ function InternalTextInput(props: PasteInputProps): React.ReactNode {
         });
     };
 
-    const _onLineWrap = (event: NativeSyntheticEvent<PasteTextInputLineWrapEvent['nativeEvent']>) => {
+    const _onLineWrap = (
+        event: NativeSyntheticEvent<PasteTextInputLineWrapEvent>
+    ) => {
         onLineWrap && onLineWrap(event);
     };
 
@@ -425,9 +427,7 @@ function InternalTextInput(props: PasteInputProps): React.ReactNode {
     );
 
     return (
-        <TextAncestor.Provider value={true}>
-            {textInput}
-        </TextAncestor.Provider>
+        <TextAncestor.Provider value={true}>{textInput}</TextAncestor.Provider>
     );
 }
 

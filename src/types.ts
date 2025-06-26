@@ -1,13 +1,13 @@
-import type { ForwardedRef } from 'react'
+import type { ForwardedRef } from 'react';
 import type {
-  HostComponent,
-  NativeSyntheticEvent,
-  TextInputProps
-} from 'react-native'
-import type { Int32 } from 'react-native/Libraries/Types/CodegenTypes'
+    HostComponent,
+    NativeSyntheticEvent,
+    TextInputProps,
+} from 'react-native';
+import type { Int32 } from 'react-native/Libraries/Types/CodegenTypes';
 
 export type PasteTextInputInstance = React.ElementRef<
-  HostComponent<PasteInputProps>
+    HostComponent<PasteInputProps>
 > & {
     clear: () => void;
     isFocused: () => boolean;
@@ -20,23 +20,23 @@ export interface PastedFile {
     fileSize: Int32;
     type: string;
     uri: string;
-}   
+}
 
 export interface PasteEvent {
     nativeEvent: {
         data: PastedFile[];
         error?: {
-          message: string;
+            message: string;
         };
     };
 }
 
 export interface PasteTextInputLineWrapEvent {
     nativeEvent: {
-        target: number
-        lineCount: number
-        isWrapped: boolean
-    }
+        target: number;
+        lineCount: number;
+        isWrapped: boolean;
+    };
 }
 
 export interface PasteInputProps extends TextInputProps {
@@ -69,11 +69,11 @@ export interface TextInputNativeCommands {
     focus: (viewRef: unknown) => void;
     blur: (viewRef: unknown) => void;
     setTextAndSelection: (
-      viewRef: unknown,
-      mostRecentEventCount: number,
-      value: string | null, // in theory this is nullable
-      start: number,
-      end: number
+        viewRef: unknown,
+        mostRecentEventCount: number,
+        value: string | null, // in theory this is nullable
+        start: number,
+        end: number
     ) => void;
 }
 

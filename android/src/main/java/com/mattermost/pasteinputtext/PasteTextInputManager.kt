@@ -1,6 +1,5 @@
 package com.mattermost.pasteinputtext
 
-import android.text.InputType
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.MapBuilder
@@ -34,9 +33,7 @@ class PasteTextInputManager(context: ReactApplicationContext) : ReactTextInputMa
 
   override fun createViewInstance(context: ThemedReactContext): PasteInputEditText {
     val editText = PasteInputEditText(context)
-    val inputType = editText.inputType
 
-    editText.inputType = inputType and (InputType.TYPE_TEXT_FLAG_MULTI_LINE.inv())
     editText.returnKeyType = "done"
     val eventDispatcher = getEventDispatcher(mContext, editText)
     editText.customInsertionActionModeCallback = PasteInputActionCallback(editText, disableCopyPaste, eventDispatcher)
@@ -50,6 +47,33 @@ class PasteTextInputManager(context: ReactApplicationContext) : ReactTextInputMa
 
     val pasteInputEditText = editText as PasteInputEditText
     val eventDispatcher = getEventDispatcher(reactContext, editText)
+
+    pasteInputEditText.setSelectionWatcher(object : PasteInputEditText.SelectionWatcher {
+      override fun onSelectionChanged(selStart: Int, selEnd: Int) {
+        eventDispatcher?.dispatchEvent(
+            PasteTextInputSelectionChangeEvent(
+                UIManagerHelper.getSurfaceId(reactContext),
+                pasteInputEditText.id,
+                selStart,
+                selEnd
+            )
+        )
+      }
+    })
+
+    pasteInputEditText.setLineWrapWatcher(object : PasteInputEditText.LineWrapWatcher {
+        override fun onLineWrapChanged(lineCount: Int, isWrapped: Boolean) {
+            eventDispatcher?.dispatchEvent(
+                PasteTextInputLineWrapEvent(
+                    UIManagerHelper.getSurfaceId(reactContext),
+                    pasteInputEditText.id,
+                    lineCount,
+                    isWrapped
+                )
+            )
+        }
+    })
+
     pasteInputEditText.setOnPasteListener(PasteInputListener(pasteInputEditText, reactContext.surfaceId), eventDispatcher)
   }
 
@@ -61,6 +85,27 @@ class PasteTextInputManager(context: ReactApplicationContext) : ReactTextInputMa
     )
 
     return map
+  }
+
+  override fun getExportedCustomDirectEventTypeConstants(): MutableMap<String, Any> {
+    return MapBuilder.builder<String, Any>()
+        .put(
+            "onSelectionChange",
+            MapBuilder.of("registrationName", "onSelectionChange")
+        )
+        .put(
+            "onContentSizeChange",
+            MapBuilder.of("registrationName", "onContentSizeChange")
+        )
+        .put(
+            "onScroll",
+            MapBuilder.of("registrationName", "onScroll")
+        )
+        .put(
+            "onLineWrap",
+            MapBuilder.of("registrationName", "onLineWrap")
+        )
+        .build()
   }
 
   companion object {

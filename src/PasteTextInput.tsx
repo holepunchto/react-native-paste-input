@@ -8,6 +8,7 @@ import type {
     PasteTextInputInstance,
     Selection,
     SubmitBehavior,
+    PasteTextInputLineWrapEvent,
 } from './types';
 import {
     Platform,
@@ -62,6 +63,7 @@ function InternalTextInput(props: PasteInputProps): React.ReactNode {
         tabIndex,
         'selection': propsSelection,
         selectionColor,
+        onLineWrap,
         // selectionHandleColor,
         // cursorColor,
         ...otherProps
@@ -282,6 +284,10 @@ function InternalTextInput(props: PasteInputProps): React.ReactNode {
         });
     };
 
+    const _onLineWrap = (event: NativeSyntheticEvent<PasteTextInputLineWrapEvent['nativeEvent']>) => {
+        onLineWrap && onLineWrap(event);
+    };
+
     const multiline = props.multiline ?? false;
 
     let submitBehavior: SubmitBehavior;
@@ -414,11 +420,14 @@ function InternalTextInput(props: PasteInputProps): React.ReactNode {
                 style
             )}
             text={text}
+            onLineWrap={_onLineWrap}
         />
     );
 
     return (
-        <TextAncestor.Provider value={true}>{textInput}</TextAncestor.Provider>
+        <TextAncestor.Provider value={true}>
+            {textInput}
+        </TextAncestor.Provider>
     );
 }
 

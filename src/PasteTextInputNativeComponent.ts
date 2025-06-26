@@ -86,6 +86,11 @@ export interface PasteTextInputKeyEventData extends TargetedEvent {
     key: string;
 }
 
+export interface PasteTextInputLineWrapEventData extends TargetedEvent {
+    lineCount: Int32;
+    isWrapped: boolean;
+}
+
 type KeyboardType =
     | 'default'
     | 'email-address'
@@ -248,6 +253,8 @@ export interface NativeProps extends ViewProps {
 
     textAlignVertical?: string;
     cursorColor?: ColorValue;
+
+    onLineWrap?: DirectEventHandler<PasteTextInputLineWrapEventData>;
 }
 
 type PasteTextInputNativeComponentType = HostComponent<NativeProps>;

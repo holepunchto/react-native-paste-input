@@ -122,8 +122,8 @@ std::int32_t convertNSDictionaryValueToStdInt(NSDictionary *dictionary, NSString
   const auto &newTextInputProps = static_cast<const PasteTextInputProps &>(*props);
 
   // Traits:
-  if (newTextInputProps.traits.multiline != oldTextInputProps.traits.multiline) {
-    [self _setMultiline:newTextInputProps.traits.multiline];
+  if (newTextInputProps.multiline != oldTextInputProps.multiline) {
+    [self _setMultiline:newTextInputProps.multiline];
   }
 
   if (newTextInputProps.traits.autocapitalizationType != oldTextInputProps.traits.autocapitalizationType) {
@@ -407,6 +407,67 @@ std::int32_t convertNSDictionaryValueToStdInt(NSDictionary *dictionary, NSString
     return;
   }
 
+  [_backedTextInputView.attributedText enumerateAttributesInRange:NSMakeRange(0, _backedTextInputView.attributedText.length)
+                                                          options:0
+                                                       usingBlock:^(NSDictionary *attrs, NSRange range, BOOL *stop) {
+    if (attrs[@"CTAdaptiveImageProvider"]) {
+
+      dispatch_async(dispatch_get_main_queue(), ^{
+        // 1. High resolution canvas with transparent background
+        CGFloat size = 400;
+        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, size, size)];
+        label.backgroundColor = UIColor.clearColor;
+        label.textAlignment = NSTextAlignmentCenter;
+        label.numberOfLines = 0;
+        label.baselineAdjustment = UIBaselineAdjustmentAlignCenters;
+        label.contentMode = UIViewContentModeCenter;
+
+        // Set font size explicitly to a large size
+        UIFont *font = [UIFont systemFontOfSize:200];
+        NSMutableAttributedString *enlargedAttrText = [[NSMutableAttributedString alloc] initWithAttributedString:[_backedTextInputView.attributedText attributedSubstringFromRange:range]];
+        [enlargedAttrText addAttribute:NSFontAttributeName value:font range:NSMakeRange(0, enlargedAttrText.length)];
+        label.attributedText = enlargedAttrText;
+
+        [label sizeToFit];
+        CGRect adjustedFrame = label.frame;
+        adjustedFrame.origin.x = (size - adjustedFrame.size.width) ;
+        adjustedFrame.origin.y = (size - adjustedFrame.size.height) ;
+        label.frame = adjustedFrame;
+
+        // 2. Render with correct scale
+        UIGraphicsBeginImageContextWithOptions(label.bounds.size, NO, 1.0);
+        [label.layer renderInContext:UIGraphicsGetCurrentContext()];
+        UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+
+        if (image) {
+          NSData *pngData = UIImagePNGRepresentation(image);
+          
+          // 3. Save to temp file for `file://` URI
+          NSString *fileName = [NSString stringWithFormat:@"%@.png", [[NSUUID UUID] UUIDString]];
+          NSString *tmpPath = [NSTemporaryDirectory() stringByAppendingPathComponent:fileName];
+          [pngData writeToFile:tmpPath atomically:YES];
+
+          NSString *uri = [NSString stringWithFormat:@"file://%@", tmpPath];
+
+          if (self->_backedTextInputView.onPaste) {
+            NSDictionary *file = @{
+              @"fileName": fileName,
+              @"fileSize": @(pngData.length),
+              @"type": @"image/png",
+              @"uri": uri,
+            };
+            self->_backedTextInputView.onPaste(@{ @"data": @[file] });
+          }
+        } else {
+          NSLog(@"[PasteInput] Failed to render memoji glyph to image");
+        }
+      });
+
+      *stop = YES;
+    }
+  }];
+
   [self _updateState];
 
   if (_eventEmitter) {
@@ -415,13 +476,14 @@ std::int32_t convertNSDictionaryValueToStdInt(NSDictionary *dictionary, NSString
   }
 }
 
+
 - (void)textInputDidChangeSelection
 {
   if (_comingFromJS) {
     return;
   }
   const auto &props = static_cast<const PasteTextInputProps &>(*_props);
-  if (props.traits.multiline && ![_lastStringStateWasUpdatedWith isEqual:_backedTextInputView.attributedText]) {
+  if (props.multiline && ![_lastStringStateWasUpdatedWith isEqual:_backedTextInputView.attributedText]) {
     [self textInputDidChange];
     _ignoreNextTextInputCall = YES;
   }
@@ -708,11 +770,11 @@ std::int32_t convertNSDictionaryValueToStdInt(NSDictionary *dictionary, NSString
 - (SubmitBehavior)getSubmitBehavior
 {
   const auto &props = static_cast<const PasteTextInputProps &>(*_props);
-  const SubmitBehavior submitBehaviorDefaultable = props.traits.submitBehavior;
+  const SubmitBehavior submitBehaviorDefaultable = props.submitBehavior;
 
   // We should always have a non-default `submitBehavior`, but in case we don't, set it based on multiline.
   if (submitBehaviorDefaultable == SubmitBehavior::Default) {
-    return props.traits.multiline ? SubmitBehavior::Newline : SubmitBehavior::BlurAndSubmit;
+    return props.multiline ? SubmitBehavior::Newline : SubmitBehavior::BlurAndSubmit;
   }
 
   return submitBehaviorDefaultable;

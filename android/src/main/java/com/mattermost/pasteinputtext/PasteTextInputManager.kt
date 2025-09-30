@@ -171,6 +171,10 @@ class PasteTextInputManager(context: ReactApplicationContext) : ReactTextInputMa
             "onLineWrap",
             MapBuilder.of("registrationName", "onLineWrap")
         )
+        .put(
+            "topKeyPress",
+            MapBuilder.of("registrationName", "onKeyPress")
+        )
       .build()
   }
 

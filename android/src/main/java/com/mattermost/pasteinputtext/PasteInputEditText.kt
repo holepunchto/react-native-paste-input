@@ -172,8 +172,8 @@ class PasteInputEditText(context: ThemedReactContext) : ReactEditText(context) {
         // Wrap again to intercept text input for key press events
         return object : InputConnectionWrapper(wrappedIc, true) {
             override fun commitText(text: CharSequence?, newCursorPosition: Int): Boolean {
-                text?.forEach { char ->
-                    dispatchKeyPressForChar(char.toString())
+                if (!text.isNullOrEmpty()) {
+                    dispatchKeyPressForChar(text.toString())
                 }
                 return super.commitText(text, newCursorPosition)
             }
